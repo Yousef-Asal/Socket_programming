@@ -63,6 +63,8 @@ if (clientSocket == INVALID_SOCKET){
 else{
     cout << "socket() id ok"<<endl;
 }
+
+
 /////////Connect to the socket
 
 // creating a socket address variable of type sockaddr_in 
@@ -88,10 +90,44 @@ if (connect(clientSocket, (SOCKADDR*)&clientService, sizeof(clientService)) == S
 else{
     cout << "client: connect() is ok" <<endl;
 }
+
+
+/////////sending data
+
+// createing the variable that will hold the message we will send and the value is the size of this message
+char buffer[200];
+// getting the message that we want to send from the user
+printf("enter your message ");
+cin.getline(buffer,200);
+// calling the send function and getting the returned data which is the bytes sent and storing this data in a variable
+int byteCount = send(clientSocket, buffer, 200, 0);
+//check if the return value of the send function equals zero then there is a problem
+// and if it returned the bytes sent we will print that
+if(byteCount == SOCKET_ERROR){
+    printf("server send error %ld.\n",WSAGetLastError());
+    return -1;
+}
+else{
+    printf("server sent %ld bytes \n",byteCount);
 }
 
+/////////receive confirmation
+byteCount = recv(clientSocket, buffer, 200, 0);
+//check if the return value of the send function equals zero then there is a problem
+// and if it returned the bytes sent we will print that
+if(byteCount > 0){
+    cout << "confirmation message received" << buffer <<endl;
+}
+else{
+    WSACleanup();
+}
+
+/////////Close socket
+system("pause");
+WSACleanup();
 
 // note that in order for this file to compile the editor or (vscode) should load the ws2_32 library to connect to the dll
 // responsible for the socket program so either you include this library in the tasks.json
 // or you should provide the library directly when you compile by adding this -lws2_32
-// so the command will look like this (g++ server.cpp -o server.exe -lws2_32)
+// so the command will look like this (g++ client.cpp -o client.exe -lws2_32)
+}

@@ -118,11 +118,43 @@ if (acceptSocket == INVALID_SOCKET){
     return -1;
 }
 cout << "accepted connection" << endl;
-system("pause");
-WSACleanup();
+
+
+
+/////////Recieve data
+
+// createing the variable that will hold the message we will recieve and the value is the size of this message
+char recieveBuffer[200] = "";
+// calling the send function and getting the returned data which is the bytes sent and storing this data in a variable
+// notice we pass the accept socket not the server socket and that is because the accept socket is the socket connected to the client
+// the server socket is still listening for other clients
+int byteCount = recv(acceptSocket, recieveBuffer, 200, 0);
+//check if the return value of the recv function equals zero then there is a problem
+// and if it returned the bytes recieved we will print that
+if(byteCount <0){
+    printf("client recieve error %ld.\n",WSAGetLastError());
+    return 0;
+}
+else{
+    printf("recieved data %s bytes \n",recieveBuffer);
 }
 
 
+/////////send confirmation
+char confirmationBuffer[200] = "message received";
+byteCount = send(acceptSocket, confirmationBuffer, 200, 0);
+
+if(byteCount >0){
+    cout << "confirmation message sent: "<< endl;
+}
+else{
+    WSACleanup();
+
+}
+/////////Close socket
+system("pause");
+WSACleanup();
+}
 // note that in order for this file to compile the editor or (vscode) should load the ws2_32 library to connect to the dll
 // responsible for the socket program so either you include this library in the tasks.json
 // or you should provide the library directly when you compile by adding this -lws2_32
